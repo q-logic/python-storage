@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/google-cloud-storage/#history
 
+## [1.26.0](https://www.github.com/googleapis/python-storage/compare/v1.25.0...v1.26.0) (2020-01-31)
+
+
+### Features
+
+* **storage:** add support for signing URLs using token ([#9889](https://www.github.com/googleapis/python-storage/issues/9889)) ([ad280bf](https://www.github.com/googleapis/python-storage/commit/ad280bf506d3d7a37c402d06eac07422a5fe80af))
+
 ## 1.25.0
 
 01-16-2020 11:00 PST

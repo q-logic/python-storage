@@ -963,6 +963,7 @@ class TestStorageSignURLs(unittest.TestCase):
         encryption_key=None,
         service_account_email=None,
         access_token=None,
+        virtual_hosted_style_endpoint=False,
     ):
         expiration = self._morph_expiration(version, expiration)
 
@@ -979,6 +980,7 @@ class TestStorageSignURLs(unittest.TestCase):
             version=version,
             service_account_email=None,
             access_token=None,
+            virtual_hosted_style_endpoint=virtual_hosted_style_endpoint,
         )
 
         headers = {}
@@ -1049,6 +1051,11 @@ class TestStorageSignURLs(unittest.TestCase):
             payload=b"Test signed URL for blob w/ CSEK",
             encryption_key=encryption_key,
             version="v4",
+        )
+
+    def test_create_signed_read_url_v4_virtual_host_style(self):
+        self._create_signed_read_url_helper(
+            method="get", version="v4", virtual_hosted_style_endpoint=True
         )
 
     def test_create_signed_read_url_v2_w_access_token(self):

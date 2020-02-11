@@ -393,6 +393,7 @@ class Test_Blob(unittest.TestCase):
         encryption_key=None,
         access_token=None,
         service_account_email=None,
+        virtual_hosted_style_endpoint=False,
     ):
         from six.moves.urllib import parse
         from google.cloud._helpers import UTC
@@ -436,6 +437,7 @@ class Test_Blob(unittest.TestCase):
                 version=version,
                 access_token=access_token,
                 service_account_email=service_account_email,
+                virtual_hosted_style_endpoint=virtual_hosted_style_endpoint,
             )
 
         self.assertEqual(signed_uri, signer.return_value)
@@ -446,7 +448,7 @@ class Test_Blob(unittest.TestCase):
             expected_creds = credentials
 
         encoded_name = blob_name.encode("utf-8")
-        expected_resource = "/name/{}".format(parse.quote(encoded_name, safe=b"/~"))
+
         if encryption_key is not None:
             expected_headers = headers or {}
             if effective_version == "v2":
@@ -456,6 +458,16 @@ class Test_Blob(unittest.TestCase):
         else:
             expected_headers = headers
 
+        if virtual_hosted_style_endpoint and version == "v4":
+            expected_headers = headers or {}
+            storage_uri = api_access_endpoint.split("://")
+            api_access_endpoint = (
+                storage_uri[0] + "://" + bucket.name + "." + storage_uri[1]
+            )
+            expected_resource = "/{}".format(parse.quote(encoded_name, safe=b"/~"))
+            expected_headers["Host"] = bucket.name + "." + storage_uri[1]
+        else:
+            expected_resource = "/name/{}".format(parse.quote(encoded_name, safe=b"/~"))
         expected_kwargs = {
             "resource": expected_resource,
             "expiration": expiration,
@@ -596,6 +608,14 @@ class Test_Blob(unittest.TestCase):
     def test_generate_signed_url_v4_w_csek_and_headers(self):
         self._generate_signed_url_v4_helper(
             encryption_key=os.urandom(32), headers={"x-goog-foo": "bar"}
+        )
+
+    def test_generate_signed_url_v4_w_virtual_host_style(self):
+        self._generate_signed_url_v4_helper(virtual_hosted_style_endpoint=True)
+
+    def test_generate_signed_url_v4_w_virtual_host_style_w_headers(self):
+        self._generate_signed_url_v4_helper(
+            virtual_hosted_style_endpoint=True, headers={"x-goog-foo": "bar"}
         )
 
     def test_generate_signed_url_v4_w_credentials(self):

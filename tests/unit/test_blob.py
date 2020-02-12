@@ -461,8 +461,8 @@ class Test_Blob(unittest.TestCase):
         if virtual_hosted_style_endpoint and version == "v4":
             expected_headers = headers or {}
             storage_uri = api_access_endpoint.split("://")
-            api_access_endpoint = (
-                storage_uri[0] + "://" + bucket.name + "." + storage_uri[1]
+            api_access_endpoint = "{}://{}.{}".format(
+                storage_uri[0], bucket.name, storage_uri[1]
             )
             expected_resource = "/{}".format(parse.quote(encoded_name, safe=b"/~"))
             expected_headers["Host"] = bucket.name + "." + storage_uri[1]

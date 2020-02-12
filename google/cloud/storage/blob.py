@@ -456,7 +456,7 @@ class Blob(_PropertyMixin):
 
         :type virtual_hosted_style_endpoint: bool
         :param virtual_hosted_style_endpoint:
-            (Optional) If true, Use a virtual hosted-style hostname, which adds the bucket into
+            (Optional) If true, use a virtual hosted-style hostname, which adds the bucket into
             the host portion of the URI. e.g.: 'https://mybucket.storage.googleapis.com/...'
 
         :raises: :exc:`ValueError` when version is invalid.
@@ -477,18 +477,16 @@ class Blob(_PropertyMixin):
 
         if virtual_hosted_style_endpoint and version == "v4":
             storage_uri = api_access_endpoint.split("://")
-            api_access_endpoint = (
-                storage_uri[0] + "://" + self.bucket.name + "." + storage_uri[1]
+            api_access_endpoint = "{}://{}.{}".format(
+                storage_uri[0], self.bucket.name, storage_uri[1]
             )
-            resource = "/{quoted_name}".format(quoted_name=quoted_name)
+            resource = "/{}".format(quoted_name)
             if headers is None:
                 headers = {}
             headers["Host"] = self.bucket.name + "." + storage_uri[1]
 
         else:
-            resource = "/{bucket_name}/{quoted_name}".format(
-                bucket_name=self.bucket.name, quoted_name=quoted_name
-            )
+            resource = "/{}/{}".format(self.bucket.name, quoted_name)
 
         if credentials is None:
             client = self._require_client(client)

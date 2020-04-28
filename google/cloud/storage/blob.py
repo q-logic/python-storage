@@ -2660,3 +2660,15 @@ def _raise_for_more_than_one_none(**kwargs):
         )
 
         raise ValueError(msg)
+
+
+def _insert_generation_match_args(name_value_pairs, **kwargs):
+    for snake_field, camel_field in {
+        "if_generation_match": "ifGenerationMatch",
+        "if_generation_not_match": "ifGenerationNotMatch",
+        "if_metageneration_match": "ifMetagenerationMatch",
+        "if_metageneration_not_match": "ifMetagenerationNotMatch",
+    }.items():
+        value = kwargs.get(snake_field)
+        if value is not None:
+            name_value_pairs.append((camel_field, value))

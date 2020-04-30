@@ -30,6 +30,14 @@ STORAGE_EMULATOR_ENV_VAR = "STORAGE_EMULATOR_HOST"
 
 _DEFAULT_STORAGE_HOST = u"https://storage.googleapis.com"
 
+# generation match parameters in camel and snake cases
+_GENERATION_MATCH_PARAMETERS = (
+    ("if_generation_match", "ifGenerationMatch"),
+    ("if_generation_not_match", "ifGenerationNotMatch"),
+    ("if_metageneration_match", "ifMetagenerationMatch"),
+    ("if_metageneration_not_match", "ifMetagenerationNotMatch"),
+)
+
 
 def _get_storage_host():
     return os.environ.get(STORAGE_EMULATOR_ENV_VAR, _DEFAULT_STORAGE_HOST)
@@ -312,3 +320,18 @@ def _convert_to_timestamp(value):
     utc_naive = value.replace(tzinfo=None) - value.utcoffset()
     mtime = (utc_naive - datetime(1970, 1, 1)).total_seconds()
     return mtime
+
+
+def _add_generation_match_parameters(name_value_pairs, **parameters):
+    """Add generation match parameters into the given parameters list.
+
+    :type name_value_pairs: list
+    :param name_value_pairs: Parameters list.
+
+    :type parameters: dict
+    :param parameters: if*generation*match parameters to add.
+    """
+    for snakecase_name, camelcase_name in _GENERATION_MATCH_PARAMETERS:
+        value = parameters.get(snakecase_name)
+        if value is not None:
+            name_value_pairs.append((camelcase_name, value))
